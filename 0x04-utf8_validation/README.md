@@ -1,0 +1,1 @@
+In this implementation, the countLeadingOnes function calculates the number of leading '1's in a given byte, which helps determine the number of bytes used for a character in the UTF-8 encoding format. The validUTF8 function then checks if the data set follows the rules for a valid UTF-8 encoding and returns True if it's valid or False otherwise.
