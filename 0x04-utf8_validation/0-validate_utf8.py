@@ -1,43 +1,36 @@
+#!/usr/bin/python3
+"""UTF-8 Validation Module
+"""
+
+
 def validUTF8(data):
-    # Function to count the number of leading '1's in a byte
-    def countLeadingOnes(byte):
-        count = 0
-        mask = 1 << 7
-        while byte & mask:
-            count += 1
-            mask >>= 1
-        return count
+    """Determines if a given data set represents a valid UTF-8 encoding.
 
-    # Loop through the data
-    index = 0
-    while index < len(data):
-        # Get the number of bytes for the current character
-        leading_ones = countLeadingOnes(data[index])
+    Args:
+        data (list): list of integers
 
-        # If the leading ones do not match the UTF-8 format, return False
-        if leading_ones == 1 or leading_ones > 4:
-            return False
+    Returns:
+        bool: True if data is a valid UTF-8 encoding, else return False
+    """
+    n_bytes = 0
 
-        # Check if we have enough bytes for this character
-        if index + leading_ones > len(data):
-            return False
-
-        # Check if the following bytes have the correct format
-        for i in range(1, leading_ones):
-            if countLeadingOnes(data[index + i]) != 1:
+    for num in data:
+        byte = num & 0xff
+        if n_bytes == 0:
+            mask1 = 1 << 7
+            mask2 = 1 << 6
+            while mask1 & byte:
+                n_bytes += 1
+                mask1 = mask1 >> 1
+                mask2 = mask2 >> 1
+            if n_bytes == 0:
+                continue
+            if n_bytes == 1 or n_bytes > 4:
                 return False
-
-        index += leading_ones
-
-    return True
-
-# Testing the function with sample data
-data1 = [65]
-print(validUTF8(data1))  # Output: True
-
-data2 = [80, 121, 116, 104, 111, 110, 32, 105, 115, 32, 99, 111, 111, 108, 33]
-print(validUTF8(data2))  # Output: True
-
-data3 = [229, 65, 127, 256]
-print(validUTF8(data3))  # Output: False
-
+        else:
+            mask1 = 1 << 7
+            mask2 = 1 << 6
+            if not (byte & mask1 and not (byte & mask2)):
+                return False
+        n_bytes -= 1
+    return n_bytes == 0
